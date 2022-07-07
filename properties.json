@@ -1,0 +1,15 @@
+{
+    "general-properties":{
+        "images-per-tar": 200
+    },
+    "directories-and-filepaths":{
+        "download-directory": "/Users/adam/Desktop/FastSDSSDownload/",
+        "csv-filepath": "/Users/adam/Desktop/FastSDSSDownload/testObjects.csv"
+    },
+    "globus-credentials":{
+        "source-end-point": "f8362eaf-fc40-451c-8c44-50b71ec7f247",
+        "destination-end-point": "",
+        "client-id": "",
+        "transfer-rt": ""
+    }
+}
