@@ -57,7 +57,7 @@ In addition, in `properties.json` the field `images-per-tar` can be changed so t
 
 This script can be executed with `python3 globusDownloadTarred.py`. This step can take a long time depending on internet speeds, hardware write speeds etc.
 
-## Step 5: Anaylse images
+## Step 5: Analyse images
 
 Once the survey images have been downloaded `globusAnalyse.py` can be executed to cut out the images. The script takes two parameters in the form `python3 globusAnalyse.py total_number_of_jobs job_number`. Here `total_number_of_jobs` is the amount of jobs that will execute at the same time to analyse the survey images and `job_number` is the number of the current job.
 
