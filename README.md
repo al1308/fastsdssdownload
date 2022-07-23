@@ -22,11 +22,11 @@ The .csv file must be in the same directory as the main script.
 
 SDSS imaging data is stored in the form of large survey images that are then cutout to obtain the individual galaxy images.
 
-It is more than likely that with a large download that multiple objects of interest lie within the same survey image so therefore this only needs to be downloaded once.
+It is more than likely that with a large download, multiple objects of interest lie within the same survey image so therefore this only needs to be downloaded once.
 
 By running `getSDSSDictionary.py` a dictionary of survey images to be downloaded is obtained with the key as the combination `'run rerun camcol field'`. The value of the dictionary is a list of objIds of the objects that lie within that particular survey image.
 
-In the same directory as the script inside the `properties.csv` file `csv-filepath` needs to be replaced with the absolute file path of the .csv file containing the information about the objects to be downloaded. In addition, `download-directory` needs to be changed so that the directory where all the data is to be downloaded can be specified. This should be the absolute file path ending with a forward slash e.g. /users/abc/def/downloadFolder/
+In the same directory as the script inside the `properties.json` file `csv-filepath` needs to be replaced with the absolute file path of the .csv file containing the information about the objects to be downloaded. In addition, `download-directory` needs to be changed so that the directory where all the data is to be downloaded can be specified. This should be the absolute file path ending with a forward slash e.g. /users/abc/def/downloadFolder/
 
 <!-- Within the file `dataCSVLocation` needs to be replaced with the absolute file path of the .csv file with the information for the objects to be downloaded. In addition, `pickleLocation` needs to be changed so that the location of the destination dictionary can be specified. **Note**: The pickle file destination needs to be noted down so that it can be used when loading in the dictionary in the download stage. -->
 
@@ -47,11 +47,15 @@ To utilise this service an account needs to be created and api keys need to be c
 
 ## Step 4: Download survey images
 
-Depending on bandwidth and cpu constraints this section can be split up into multiple processes this needs to be decided by the end user.
+This step will download the survey images using the Globus service and tar the files so that the number of files downloaded and on disk is not too high to exceed quotas.
 
-In the `globusDownload.py` file there are two variables named `source_endpoint_id` and `destination_endpoint_id`. These variables need to be replaced with the source and destination end point ids. The 'SDSS Public Release' source end point is `f8362eaf-fc40-451c-8c44-50b71ec7f247` and is already hard in the properties .json file.
+In `properties.json` there are two variables named `source-end-point` and `destination-end-point`. These fields need to be replaced with the source and destination end point ids. The 'SDSS Public Release' source end point is `f8362eaf-fc40-451c-8c44-50b71ec7f247` and is already provided in the properties .json file.
 
 The destination end point needs to be included to specify where the data is being transferred to. This end point can be obtained by downloading the globus client for a personal machine or when using an institution supercomputer access to the specific folder must be requested by the administrator.
+
+In addition, in `properties.json` the field `images-per-tar` can be changed so that the number of images contained within one tar file can be changed. It is set as a default at 200 (Reccommended) but can be changed if desired.
+
+This script can be executed with `python3 globusDownloadTarred.py`. This step can take a long time depending on internet speeds, hardware write speeds etc.
 
 ## Step 5: Anaylse images
 
