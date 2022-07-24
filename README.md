@@ -42,7 +42,7 @@ To utilise this service an account needs to be created and api keys need to be c
 2. After creating an account visit https://developers.globus.org.
 3. Select 'Register your app with Globus'
 4. Click the 'add' button and select add new app and fill in the details as shown below, replacing testApp with an appropriate name. Once the details have been filled out click 'Create App' ![](documentation/globusappSetup.png) 
-5. Now we have a way to use the api with globus. In the 'Projects' out new app should be there and when the dropdown is clicked a client id should be associated with the app
+5. Now we have a way to use the api with globus. In the 'Projects' section our new app should be there and when the dropdown is clicked a client id should be associated with the app
 6. Now using the `globusKeySetup.py` script essential credentials can be obtained that are used to get data from the service. This script will produce the refresh token, access token and an expiry time. The access token expires after the expiry time but the refresh token will automatically obtain another api key once the time has passed. This makes the refresh token ideal for long downloads. The refresh token should be noted and should be copied into the `transfer_rt` variable within the `properties.json` file
 
 ## Step 4: Download survey images
