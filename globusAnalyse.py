@@ -48,6 +48,7 @@ def processImages(filename):
     # Loop though the different ra and dec pairs and if one of the filters doesn't work then don't add it to the array
 
     cropped_images = []
+    imageIDs = []
 
     for objId in SDSS_dictionary[filename]:
         # Creates an array for the file to be stored
@@ -63,14 +64,19 @@ def processImages(filename):
                 image.append(cropped)
               
         # Check if the image is in the correct shape
+        # If the correct shape is present then add it to the export array along with the object ID
         if np.array(image).shape == (5, 32, 32):
             cropped_images.append(image)
+            imageIDs.append(objId)
         else:
             # If the image does not have the correct size then the image will not be added to the array
             print('Added to skipped array')
             skipped_images.append(str(ra_dec_pair))
 
+    # Convert to numpy arrays
+
     cropped_images = np.array(cropped_images)
+    imageIDs = np.array(imageIDs)
 
     # Add the skipped images to the text file 
 
@@ -86,7 +92,7 @@ def processImages(filename):
     # If the shape of the resulting array is correct then it can be returned
     
     if len(cropped_images.shape) == 4:
-        return np.transpose(cropped_images, (0,2,3,1))
+        return np.transpose(cropped_images, (0,2,3,1)), imageIDs
     else:
         return None
 
@@ -104,7 +110,8 @@ def getProperties():
 def createDirectoriesandFiles():
     # Create a folder relating to the job so that the temp untarred files can be stored there
     os.makedirs('{}downloadedData/untarredFiles/Job{}'.format(downloadLocation, str(job_number)), exist_ok = True)
-    os.makedirs('{}downloadedData/numpyFiles'.format(downloadLocation), exist_ok = True)
+    os.makedirs('{}downloadedData/numpyFiles/Images'.format(downloadLocation), exist_ok = True)
+    os.makedirs('{}downloadedData/numpyFiles/Labels'.format(downloadLocation), exist_ok = True)
     os.makedirs('{}downloadedData/exportLogs'.format(downloadLocation), exist_ok = True)
 
 #endregion
@@ -146,8 +153,9 @@ filters = ['u', 'g', 'r', 'i', 'z']
 
 start_time = time.time()
 
-for fileName in splitFiles[int(job_number) - 1]:
+for fileIndex, fileName in enumerate(splitFiles[int(job_number) - 1]):
     processed_images = []
+    processedIDs = []
     # untar the file in the specified directory for the job
     my_tar = tarfile.open('{}downloadedData/tarFiles/{}.tar'.format(downloadLocation, str(fileName)))
     my_tar.extractall('{}downloadedData/untarredFiles/Job{}'.format(downloadLocation, str(job_number)))
@@ -158,17 +166,20 @@ for fileName in splitFiles[int(job_number) - 1]:
     for index, fitsFile in enumerate(fitsFiles):    
         print('Analysing File {}'.format(str(index)))
         # Gets a list of the processed images from the file
-        returned_images = processImages(fitsFile)
+        returned_images, returnedIDs = processImages(fitsFile)
         # Loops through each returned image and adds it to the returned images
         if returned_images is not None:
-            for retImage in returned_images:
-                processed_images.append(retImage)
-        
+            for i in range(len(returned_images)):
+                processed_images.append(returned_images[i])
+                processedIDs.append(returnedIDs[i])
+       
         print(np.array(processed_images).shape)
 
-    # Save numpy file
+    # Save numpy files (Images and associated object IDs)
+
     try:
-        np.save('{}downloadedData/numpyFiles/{}.npy'.format(downloadLocation, fileName), np.array(processed_images), allow_pickle = False)
+        np.save('{}downloadedData/numpyFiles/Images/{}.npy'.format(downloadLocation, fileName), np.array(processed_images), allow_pickle = False)
+        np.save('{}downloadedData/numpyFiles/Labels/{}.npy'.format(downloadLocation, fileName), np.array(processedIDs), allow_pickle = True)
     except ValueError as error:
         print('Error occured when saving numpy file {}'.format(str(i)))
 
@@ -177,8 +188,6 @@ for fileName in splitFiles[int(job_number) - 1]:
 
     # Update the status in the text file
     f = open("{}downloadedData/exportLogs/Job{}Log.txt".format(downloadLocation, job_number), "a")
-    f.write("Status: {} / {}".format(str((index - ((job_number - 1) * default_tar_per_job))), str(tar_per_job)))
+    f.write("Status: {} / {}".format(str(fileIndex + 1), str(len(splitFiles))))
     f.write("\n")
     f.close()
-
-    print('Analysing {} finished'.format(str(index)))

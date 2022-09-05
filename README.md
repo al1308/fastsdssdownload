@@ -63,4 +63,4 @@ The structure of how the files are stored on the SDSS servers is described in th
 
 Once the survey images have been downloaded `globusAnalyse.py` can be executed to cut out the images. The script takes two parameters in the form `python3 globusAnalyse.py total_number_of_jobs job_number`. Here `total_number_of_jobs` is the amount of jobs that will execute at the same time to analyse the survey images and `job_number` is the number of the current job.
 
-Once finished the survey images will be saved into `.npy` files and then can be loaded into the python.
+Once finished the survey images will be saved into `.npy` files and then can be loaded into the python. The object IDs associated with the images will also be saved so that ra and dec can be retrieved if needed.
